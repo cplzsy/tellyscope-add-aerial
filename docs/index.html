@@ -1,0 +1,147 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tellyscope: free your TV from tracking and bloat</title>
+<meta name="description" content="Free your TV from tracking and bloat. An open source app for your Android TV. Side load apps your TV&#39;s store doesn&#39;t carry, send files from your phone, and see which apps use data and where they connect.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="logo/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="canonical" href="https://man15h.github.io/tellyscope/">
+<meta name="theme-color" content="#F4FBFA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1517" media="(prefers-color-scheme: dark)">
+<!-- Link previews (Reddit, WhatsApp, Slack, X…). Crawlers ignore relative image paths, so the URLs are absolute. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tellyscope">
+<meta property="og:title" content="Tellyscope: free your TV from tracking and bloat">
+<meta property="og:description" content="An open source app for your Android TV. Side load apps, send files from your phone, and see which apps use data and where they connect. No root, no tracking.">
+<meta property="og:url" content="https://man15h.github.io/tellyscope/">
+<meta property="og:image" content="https://man15h.github.io/tellyscope/site/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Tellyscope: free your TV from tracking and bloat. Two phone screens show a TV's status page and its Debloat list.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tellyscope: free your TV from tracking and bloat">
+<meta name="twitter:description" content="An open source app for your Android TV. Side load apps, send files from your phone, and see which apps use data and where they connect. No root, no tracking.">
+<meta name="twitter:image" content="https://man15h.github.io/tellyscope/site/og-image.png">
+<meta name="twitter:image:alt" content="Tellyscope: free your TV from tracking and bloat. Two phone screens show a TV's status page and its Debloat list.">
+<link rel="preload" href="site/google-sans-flex-text.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="site/google-sans-flex-display.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+// Before first paint, so there is no flash of the wrong theme: a saved choice, else the system's.
+(() => {
+  const forced = new URLSearchParams(location.search).get('theme');
+  let saved = null; try { saved = localStorage.getItem('theme'); } catch (e) {}
+  document.documentElement.dataset.theme = forced || saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+</script>
+<style>
+/* Google Sans Flex, the demo video's typeface (SIL OFL 1.1, site/OFL.txt), self-hosted and cut to Latin:
+   a text cut with weights 400-700, and a display cut for the headline (weight 640, rounded 40, as in the video). */
+@font-face { font-family: "GSF Text"; src: url(site/google-sans-flex-text.woff2) format("woff2"); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: "GSF Display"; src: url(site/google-sans-flex-display.woff2) format("woff2"); font-weight: 640; font-display: swap; }
+:root { --bg: #F4FBFA; --ink: #0F2B2C; --sub: #557070; --pri: #00696B; --onpri: #FFFFFF; --tint: rgba(0,105,107,.09); --grad: radial-gradient(1200px 900px at 85% 110%,#cfe2ff 0%,transparent 60%),radial-gradient(1100px 800px at 5% -10%,#c9f3f1 0%,transparent 60%),linear-gradient(120deg,#e3f6f4 0%,#e6eefb 100%); --shadow: 0 40px 80px rgba(0,40,50,.25),0 12px 24px rgba(0,40,50,.15); color-scheme: light; }
+:root[data-theme="dark"] { --bg: #0B1517; --ink: #E6F6F5; --sub: #93ACAB; --pri: #80D4D5; --onpri: #003737; --tint: rgba(128,212,213,.10); --grad: radial-gradient(1200px 900px at 90% 110%,#1d3550 0%,transparent 60%),radial-gradient(1000px 800px at 0% -10%,#0f3a3b 0%,transparent 60%),linear-gradient(120deg,#0b1a1c 0%,#0f1b2b 100%); --shadow: 0 40px 90px rgba(0,0,0,.6); color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { font-family: "GSF Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--grad), var(--bg); min-height: 100vh; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: "GSF Display", "GSF Text", system-ui, sans-serif; font-size: 22px; font-weight: 640; letter-spacing: -.03em; }
+.logo img { width: 36px; height: 36px; border-radius: 10px; }
+.right { display: flex; align-items: center; gap: 10px; }
+.icon { width: 44px; height: 44px; border: 0; border-radius: 50%; display: grid; place-items: center; background: var(--tint); color: var(--pri); cursor: pointer; }
+.icon svg { width: 22px; height: 22px; fill: currentColor; }
+:root[data-theme="dark"] .sun, :root:not([data-theme="dark"]) .moon { display: none; }
+.hero { display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 48px; min-height: calc(100vh - 84px); padding: 24px 0 48px; }
+.eyebrow { font-size: 22px; font-weight: 560; color: var(--pri); }
+h1 { margin: 12px 0 0; font-family: "GSF Display", "GSF Text", system-ui, sans-serif; font-size: 72px; line-height: 1.1; font-weight: 640; letter-spacing: -.025em; }
+.lead { margin: 24px 0 0; font-size: 22px; line-height: 1.35; font-weight: 420; color: var(--sub); max-width: 26em; }
+.cta { margin-top: 36px; display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 28px; border-radius: 999px; font-size: 18px; font-weight: 560; text-decoration: none; }
+.btn.pri { background: var(--pri); color: var(--onpri); }
+.btn.ton { background: var(--tint); color: var(--pri); }
+.cta .br { flex-basis: 100%; height: 0; }
+.btn.sm { height: 44px; padding: 0 18px; font-size: 15px; }
+.alt { margin-top: 14px; font-size: 15px; color: var(--sub); } .alt a { color: var(--pri); font-weight: 560; }
+.note { margin-top: 10px; font-size: 15px; color: var(--sub); } .note span { white-space: nowrap; }
+/* The demo is our own thumbnail until tapped; only then does the YouTube player (no-cookie) load. */
+.video { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: var(--tint); box-shadow: var(--shadow); }
+.video img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video:focus-visible { outline: 3px solid var(--pri); outline-offset: 3px; }
+/* Tapping it opens the player in a centred modal: 16:9, 90% of the width, capped so it fits the height. */
+.player { padding: 0; border: 0; background: none; width: min(90vw, (90vh - 56px) * 16 / 9); max-width: none; max-height: none; overflow: visible; }
+.player::backdrop { background: rgb(0 0 0 / .72); backdrop-filter: blur(8px); }
+.player .close { display: grid; place-items: center; width: 44px; height: 44px; margin: 0 0 12px auto; border: 0; border-radius: 50%; background: rgb(255 255 255 / .16); color: #fff; cursor: pointer; }
+.player .close svg { width: 24px; height: 24px; fill: currentColor; }
+.player .close:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.player .frame { aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #000; }
+.player iframe { display: block; width: 100%; height: 100%; border: 0; }
+:root:has(.player[open]) { overflow: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .player[open] { animation: pop .2s ease-out; } .player[open]::backdrop { animation: fade .2s ease-out; }
+  @keyframes pop { from { opacity: 0; transform: scale(.96); } } @keyframes fade { from { opacity: 0; } }
+}
+@media (max-width: 760px) {
+  .wrap { padding: 0 20px; }
+  .btn.sm { display: none; }
+  .hero { grid-template-columns: 1fr; gap: 40px; min-height: 0; padding: 8px 0 48px; }
+  .eyebrow { font-size: 18px; } h1 { font-size: 46px; } .lead { font-size: 19px; margin-top: 16px; }
+  .player { width: min(100vw - 16px, (100vh - 72px) * 16 / 9); }
+  .cta { margin-top: 26px; } .btn { height: 52px; padding: 0 24px; font-size: 17px; }
+}
+</style></head><body>
+<div class="wrap">
+<nav><div class="logo"><img src="logo/icon.svg" alt="" width="36" height="36">Tellyscope</div>
+<div class="right"><a class="btn ton sm" href="https://github.com/man15h/tellyscope"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+<button class="icon" id="theme" aria-label="Switch theme"><svg class="sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM11 1h2v3h-2zM11 20h2v3h-2zM1 11h3v2H1zM20 11h3v2h-3zM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4zM16.3 17.7l1.4-1.4 2.1 2.1-1.4 1.4zM4.2 18.4l2.1-2.1 1.4 1.4-2.1 2.1zM16.3 6.3l2.1-2.1 1.4 1.4-2.1 2.1z"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M12.3 2A10 10 0 1 0 22 13.7 8 8 0 0 1 12.3 2z"/></svg></button></div></nav>
+<main class="hero">
+<div>
+<div class="eyebrow">Meet Tellyscope.</div>
+<h1>Free your TV from tracking and bloat.</h1>
+<p class="lead">An open source app for your Android TV. Side load apps your TV's store doesn't carry, send files from your phone, and see which apps use data and where they connect.</p>
+<div class="cta"><a class="btn pri" id="apk" href="https://github.com/man15h/tellyscope/releases/latest"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11 4h2v9.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM5 18h14v2H5z"/></svg><span>Download APK</span></a><i class="br"></i><a class="btn ton" href="obtainium://add/https://github.com/man15h/tellyscope"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 0 1 6.9 6H15a3 3 0 0 0-6 0H5.1A7 7 0 0 1 12 5zm0 14a7 7 0 0 1-6.9-6H9a3 3 0 0 0 6 0h3.9A7 7 0 0 1 12 19z"/></svg>Obtainium</a><a class="btn ton" href="https://rookieenough.github.io/Orion-Data/redirect.html?id=tellyscope&amp;icon=https%3A%2F%2Fraw.githubusercontent.com%2Fman15h%2Ftellyscope%2Fmain%2Fdocs%2Flogo%2Ficon.svg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 3 12 10.5H3z"/><rect x="13" y="13" width="8" height="8" rx="2"/><circle cx="7.5" cy="17" r="4"/></svg>Orion Store</a></div>
+<div class="alt">From GitHub Releases. Don't have Obtainium? <a href="https://github.com/ImranR98/Obtainium/releases/latest">Get it here</a>.</div>
+<div class="note"><span>Free and open source</span> · <span>3 MB</span> · <span>No root</span> · <span>No tracking</span></div>
+</div>
+<a class="video" id="demo" href="https://youtu.be/N_PeDw5GiCc" aria-label="Play the demo video"><img src="site/demo-thumb.webp" alt="" width="1280" height="720" fetchpriority="high"></a>
+</main>
+</div>
+<dialog class="player" id="player" aria-label="Tellyscope demo"><button class="close" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><div class="frame"></div></dialog>
+<script>
+const root = document.documentElement, btn = document.getElementById('theme');
+const paint = () => btn.setAttribute('aria-label', root.dataset.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+btn.onclick = () => {
+  root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+  paint();
+};
+paint();
+
+// The button works as a link to the latest release without JS; with it, it points straight at the release's APK.
+fetch('https://api.github.com/repos/man15h/tellyscope/releases/latest')
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(rel => {
+    const apk = rel.assets.find(a => a.name.endsWith('.apk'));
+    if (!apk) return;
+    const a = document.getElementById('apk');
+    a.href = apk.browser_download_url;
+    a.querySelector('span').textContent = 'Download ' + rel.tag_name;
+  }).catch(() => {});
+
+// Tapping the demo opens the player in a modal; without JS it is a plain link to YouTube. The player (no-cookie) only
+// loads on open and is removed on close, so the video stops. Esc, the close button and a backdrop tap all close it.
+const demo = document.getElementById('demo'), player = document.getElementById('player'), frame = player.querySelector('.frame');
+demo.onclick = e => {
+  e.preventDefault();
+  const f = document.createElement('iframe');
+  f.src = 'https://www.youtube-nocookie.com/embed/N_PeDw5GiCc?autoplay=1';
+  f.title = 'Tellyscope demo';
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  f.allowFullscreen = true;
+  frame.replaceChildren(f);
+  player.showModal();
+};
+player.querySelector('.close').onclick = () => player.close();
+player.onclick = e => { if (e.target === player) player.close(); };
+player.onclose = () => { frame.replaceChildren(); demo.focus(); };
+</script>
+</body></html>

@@ -1,0 +1,56 @@
+name: Device report
+description: Tell us how Tellyscope behaves on your TV, whether it works or not.
+title: "[Device] <brand> <model>"
+labels: ["device-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Device reports are how we learn which TVs work and which packages are safe to disable.
+        Please don't paste serial numbers, IP addresses or account names.
+  - type: input
+    id: model
+    attributes:
+      label: TV make and model
+      placeholder: e.g. Chromecast with Google TV (4K), Sony Bravia XR-55A80L
+    validations:
+      required: true
+  - type: input
+    id: android-version
+    attributes:
+      label: Android TV / Google TV version
+      description: Settings → System → About → Android TV OS version.
+      placeholder: e.g. Android TV OS 14
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: How did you connect?
+      options:
+        - Classic network debugging
+        - Wireless debugging (pairing code)
+        - Couldn't connect
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: Tellyscope version
+      placeholder: e.g. 0.0.1
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: What happened?
+      options:
+        - Everything worked
+        - Connected, but something misbehaved
+        - Could not connect
+        - Disabling a package caused a problem
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What you did, what you expected, what you saw. If a disabled package caused trouble, name it.

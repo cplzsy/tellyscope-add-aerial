@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Allow cleartext HTTP: the NAS Aerial shares (File Browser public share and the
+     local fnOS share) are served over http://, which Android 9+ blocks by default. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

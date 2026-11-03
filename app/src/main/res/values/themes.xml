@@ -1,0 +1,13 @@
+<resources>
+    <!-- Window theme only; everything inside is Compose (see ui/theme/Theme.kt). -->
+    <style name="Theme.Tellyscope" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Launch splash: the launcher logo on its teal disc, over the app's own background, so the
+         hand-off to the first screen has no colour jump. installSplashScreen() swaps in Theme.Tellyscope. -->
+    <style name="Theme.Tellyscope.Starting" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_icon_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Tellyscope</item>
+    </style>
+</resources>
